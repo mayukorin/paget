@@ -44,8 +44,13 @@ func hello2(c *gin.Context) {
 	fmt.Println("hello")
 }
 
+func helloWorld(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("hello world!")
+}
+
 func main() {
 	http.HandleFunc("/add", createUserKeyword)
+	http.HandleFunc("/hello", helloWorld)
 	fmt.Println("main")
 	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 	/*
