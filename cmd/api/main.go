@@ -32,5 +32,5 @@ func main() {
 	router := gin.Default()
 	router.GET("/hello", hello)
 	router.POST("/add", createUserKeyword)
-	router.Run(":1323")
+	router.Run()
 }
