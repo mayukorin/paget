@@ -28,6 +28,7 @@ func hello2(c *gin.Context) {
 
 func main() {
 	// http.HandleFunc("/user-keyword-create", createUserKeyword)
+	fmt.Println("main")
 	router := gin.Default()
 	router.GET("/hello", hello)
 	router.POST("/add", createUserKeyword)
