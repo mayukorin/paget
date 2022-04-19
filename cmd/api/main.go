@@ -32,6 +32,7 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	fmt.Println(s.Command)
+	fmt.Println(s.Text)
 
 }
 
