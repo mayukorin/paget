@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/slack-go/slack"
@@ -45,7 +46,7 @@ func hello2(c *gin.Context) {
 func main() {
 	http.HandleFunc("/user-keyword-create", createUserKeyword)
 	fmt.Println("main")
-	http.ListenAndServe(":53867", nil)
+	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 	/*
 		router := gin.Default()
 		router.GET("/hello", hello)
