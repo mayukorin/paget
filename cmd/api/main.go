@@ -44,7 +44,7 @@ func hello2(c *gin.Context) {
 }
 
 func main() {
-	http.HandleFunc("/user-keyword-create", createUserKeyword)
+	http.HandleFunc("/add", createUserKeyword)
 	fmt.Println("main")
 	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 	/*
