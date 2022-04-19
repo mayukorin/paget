@@ -28,6 +28,9 @@ services:
       context: .
       dockerfile: ./docker/app/Dockerfile
     tty: true
+    ports:
+      - 1323:1323
     # フォルダ共有（ホストOS:コンテナ）
     volumes:
       - .:/workspace/
+    command: go run ./cmd/api/main.go
