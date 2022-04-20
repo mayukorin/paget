@@ -42,6 +42,7 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var userId int64
+	fmt.Println(s.UserID)
 	if err := db.QueryRow("SELECT id FROM slack_user WHERE slack_id = ?", s.UserID).Scan(&userId); err != nil {
 		if err != sql.ErrNoRows {
 			fmt.Println("error when select slack_user")
