@@ -50,15 +50,8 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		fmt.Println("slack_user not found")
-		r, err := db.Exec("INSERT INTO slack_user(slack_id, slack_channel_id) values ($1, $2)", s.UserID, s.ChannelID)
-		if err != nil {
+		if err := db.QueryRow("INSERT INTO slack_user(slack_id, slack_channel_id) values ($1, $2) RETURNING id", s.UserID, s.ChannelID).Scan(&userId); err != nil {
 			fmt.Printf("slack_user canot create:%q\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		userId, err = r.LastInsertId()
-		if err != nil {
-			fmt.Printf("userId cannot get:%q\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -72,27 +65,33 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		fmt.Println("keyword not found")
-		r, err := db.Exec("INSERT INTO keyword(content) values($1)", s.Text)
-		if err != nil {
-			fmt.Printf("keyword cannot create:%q\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		keywordId, err = r.LastInsertId()
-		if err != nil {
-			fmt.Printf("keywordId cannot get:%q\n", err)
+		/*
+			r, err := db.Exec("INSERT INTO keyword(content) values($1)", s.Text)
+			if err != nil {
+				fmt.Printf("keyword cannot create:%q\n", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			keywordId, err = r.LastInsertId()
+			if err != nil {
+				fmt.Printf("keywordId cannot get:%q\n", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+		*/
+		if err := db.QueryRow("INSERT INTO keyword(content) values($1) RETURNING id", s.Text).Scan(&keywordId); err != nil {
+			fmt.Printf("keyword canot create:%q\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 	}
 
-	res, err := db.Exec("INSERT INTO user_keyword(slack_user_id, keyword_id) values(?, ?)", userId, keywordId)
-	if err != nil {
-		fmt.Printf("user_keyword cannot create:%q\n", err)
+	var userKeywordId int64
+	if err := db.QueryRow("INSERT INTO user_keyword(slack_user_id, keyword_id) values($1, $2) RETURNING id", userId, keywordId).Scan(&userKeywordId); err != nil {
+		fmt.Printf("keyword canot create:%q\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	userKeywordId, err := res.LastInsertId()
 
 	fmt.Println(userKeywordId)
 	params := &slack.Msg{Text: s.Text + "を検索のキーワードに追加しました！"}
