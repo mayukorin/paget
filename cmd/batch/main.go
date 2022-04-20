@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	"github.com/orijtech/arxiv/v1"
 	"github.com/slack-go/slack"
 )
