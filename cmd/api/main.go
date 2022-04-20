@@ -26,6 +26,64 @@ func createUserKeyword(c *gin.Context) {
 }
 */
 
+func indexUserKeyword(w http.ResponseWriter, r *http.Request) {
+
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		fmt.Printf("error opening database: %q\n", err)
+	}
+
+	fmt.Println("list")
+
+	s, err := slack.SlashCommandParse(r)
+	if err != nil {
+		fmt.Println("error")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	var userId int64
+	if err := db.QueryRow("SELECT id FROM slack_user WHERE slack_id = $1", s.UserID).Scan(&userId); err != nil {
+		if err != sql.ErrNoRows {
+			fmt.Printf("error when select slack_user:%q\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		fmt.Printf("slack_user canot found")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	rows, err := db.Query("SELECT content FROM keyword JOIN user_keyword on (keyword.id = user_keyword.keyword_id) WHERE user_keyword.user_id = $1", userId)
+
+	if err != nil {
+		fmt.Printf("error when select keyword:%q\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	responseMessage := ""
+	for rows.Next() {
+		var keywordContent string
+		if err := rows.Scan(&keywordContent); err != nil {
+			fmt.Printf("keyword content cannot get:%q\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		responseMessage += keywordContent + ", " // 最後いらない
+	}
+
+	params := &slack.Msg{Text: "keyword の一覧： " + responseMessage}
+	b, err := json.Marshal(params)
+	if err != nil {
+		fmt.Println("error")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Println("okk")
+	w.Write(b)
+}
+
 func deleteUserKeyword(w http.ResponseWriter, r *http.Request) {
 
 	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
@@ -169,6 +227,7 @@ func main() {
 	http.HandleFunc("/add", createUserKeyword)
 	http.HandleFunc("/delete", deleteUserKeyword)
 	http.HandleFunc("/hello", helloWorld)
+	http.HandleFunc("/list", indexUserKeyword)
 	fmt.Println("main")
 	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 	/*
