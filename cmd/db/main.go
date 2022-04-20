@@ -42,7 +42,7 @@ func main() {
 
 	const sql1 = `
 	CREATE TABLE SLACK_USER (
-		id SERIAL NOT NULL,
+		id SERIAL PRIMARY KEY,
 		slack_id VARCHAR(20) NOT NULL,
 		slack_channel_id VARCHAR(20) NOT NULL
 	);
@@ -54,7 +54,7 @@ func main() {
 
 	const sql2 = `
 	CREATE TABLE KEYWORD (
-		id SERIAL NOT NULL,
+		id SERIAL PRIMARY KEY,
 		content VARCHAR(20) NOT NULL
 	);
 	`
@@ -65,7 +65,7 @@ func main() {
 
 	const sql3 = `
 	CREATE TABLE USER_KEYWORD (
-		id SERIAL NOT NULL,
+		id SERIAL PRIMARY KEY,
 		slack_user_id BIGINT,
 		keyword_id BIGINT,
 		foreign key (slack_user_id) references SLACK_USER(id),
