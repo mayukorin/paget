@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -63,6 +64,10 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		fmt.Printf("error opening database: %q", err)
+	}
 	http.HandleFunc("/add", createUserKeyword)
 	http.HandleFunc("/hello", helloWorld)
 	fmt.Println("main")
