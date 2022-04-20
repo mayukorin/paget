@@ -35,6 +35,7 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(s.Command)
 	fmt.Println(s.Text)
+	fmt.Println("ok")
 	params := &slack.Msg{Text: s.Text}
 	b, err := json.Marshal(params)
 	if err != nil {
