@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -30,9 +31,19 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("error")
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	fmt.Println(s.Command)
 	fmt.Println(s.Text)
+	params := &slack.Msg{Text: s.Text}
+	b, err := json.Marshal(params)
+	if err != nil {
+		fmt.Println("error")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(b)
 
 }
 
