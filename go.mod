@@ -1,11 +1,13 @@
 module github.com/mayukorin/paget
 
 go 1.18
+
 // +heroku goVersion go1.18
 
 require (
 	github.com/gin-gonic/gin v1.7.7
 	github.com/labstack/echo/v4 v4.7.2
+	github.com/lib/pq v1.10.5
 )
 
 require (
@@ -19,7 +21,6 @@ require (
 	github.com/json-iterator/go v1.1.9 // indirect
 	github.com/labstack/gommon v0.3.1 // indirect
 	github.com/leodido/go-urn v1.2.0 // indirect
-	github.com/lib/pq v1.10.5 // indirect
 	github.com/mattn/go-colorable v0.1.11 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
