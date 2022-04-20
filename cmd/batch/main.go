@@ -112,8 +112,10 @@ func main() {
 	for i := 0; i < len(userSlackIdSlice); i += 2 {
 		wg.Add(1)
 		go deliveryPaper(userSlackIdSlice[i])
-		wg.Add(1)
-		go deliveryPaper(userSlackIdSlice[i+1])
+		if i+1 < len(userSlackIdSlice) {
+			wg.Add(1)
+			go deliveryPaper(userSlackIdSlice[i+1])
+		}
 		wg.Wait()
 	}
 }
