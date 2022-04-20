@@ -56,6 +56,7 @@ func deliveryPaper(slackId string) {
 
 	for rows.Next() {
 		var keywordContent string
+		fmt.Println(keywordContent)
 		if err := rows.Scan(&keywordContent); err != nil {
 			fmt.Printf("keyword content cannot get:%q\n", err)
 			return
