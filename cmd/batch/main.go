@@ -44,7 +44,7 @@ func deliveryPaper(slackId string) {
 		fmt.Printf("slack_user canot found")
 		return
 	}
-
+	fmt.Println(userId)
 	rows, err := db.Query("SELECT content FROM keyword JOIN user_keyword on (keyword.id = user_keyword.keyword_id) WHERE user_keyword.slack_user_id = $1", userId)
 
 	if err != nil {
@@ -56,7 +56,7 @@ func deliveryPaper(slackId string) {
 
 	for rows.Next() {
 		var keywordContent string
-		fmt.Println(keywordContent)
+		fmt.Printf(keywordContent)
 		if err := rows.Scan(&keywordContent); err != nil {
 			fmt.Printf("keyword content cannot get:%q\n", err)
 			return
