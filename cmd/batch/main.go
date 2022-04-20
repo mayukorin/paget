@@ -70,8 +70,8 @@ func deliveryPaper(slackId string) {
 			{
 				Op: arxiv.OpAnd,
 				Fields: []*arxiv.Field{
-					{Title: "deep learning"},
-					{Title: "CSI feedback"},
+					&arxiv.Field{Title: "deep learning"},
+					&arxiv.Field{Title: "CSI feedback"},
 				},
 			},
 		},
