@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/slack-go/slack"
 	_ "github.com/lib/pq"
+	"github.com/slack-go/slack"
 )
 
 /*
@@ -27,6 +27,12 @@ func createUserKeyword(c *gin.Context) {
 */
 
 func createUserKeyword(w http.ResponseWriter, r *http.Request) {
+
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		fmt.Printf("error opening database: %q", err)
+	}
+
 	fmt.Println("create")
 
 	s, err := slack.SlashCommandParse(r)
@@ -35,10 +41,59 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(s.Command)
-	fmt.Println(s.Text)
-	fmt.Println(s.ChannelID)
-	fmt.Println(s.UserID)
+	var userId int64
+	if err := db.QueryRow("SELECT id FROM slack_user WHERE slack_id = ?", s.UserID).Scan(&userId); err != nil {
+		if err != sql.ErrNoRows {
+			fmt.Println("error when select slack_user")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		fmt.Println("slack_user not found")
+		r, err := db.Exec("INSERT INTO slack_user(slack_id, slack_channel_id) values (?, ?)", s.UserID, s.ChannelID)
+		if err != nil {
+			fmt.Println("slack_user canot create")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		userId, err = r.LastInsertId()
+		if err != nil {
+			fmt.Println("userId cannot get")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
+
+	var keywordId int64
+	if err := db.QueryRow("SELECT id FROM keyword WHERE content = ?", s.Text).Scan(&keywordId); err != nil {
+		if err != sql.ErrNoRows {
+			fmt.Println("error whern select keyword")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		fmt.Println("keyword not found")
+		r, err := db.Exec("INSERT INTO keyword(content) values(?)", s.Text)
+		if err != nil {
+			fmt.Println("keyword cannot create")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		keywordId, err = r.LastInsertId()
+		if err != nil {
+			fmt.Println("keywordId cannot get")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
+
+	res, err := db.Exec("INSERT INTO user_keyword(slack_user_id, keyword_id) values(?, ?)", userId, keywordId)
+	if err != nil {
+		fmt.Println("user_keyword cannot create")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	userKeywordId, err := res.LastInsertId()
+
+	fmt.Println(userKeywordId)
 	params := &slack.Msg{Text: s.Text + "を検索のキーワードに追加しました！"}
 	b, err := json.Marshal(params)
 	if err != nil {
@@ -65,10 +120,6 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	_, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	if err != nil {
-		fmt.Printf("error opening database: %q", err)
-	}
 	http.HandleFunc("/add", createUserKeyword)
 	http.HandleFunc("/hello", helloWorld)
 	fmt.Println("main")
