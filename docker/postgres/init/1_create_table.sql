@@ -1,4 +1,4 @@
-CREATE TABLE PAGET_USER (
+CREATE TABLE USER (
     id BIGINT PRIMARY KEY,
     slack_user_id VARCHAR(20) NOT NULL,
     slack_channel_id VARCHAR(20) NOT NULL
