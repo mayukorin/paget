@@ -35,7 +35,8 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(s.Command)
 	fmt.Println(s.Text)
-	fmt.Println("ok")
+	fmt.Println(s.ChannelID)
+	fmt.Println(s.UserID)
 	params := &slack.Msg{Text: s.Text + "を検索のキーワードに追加しました！"}
 	b, err := json.Marshal(params)
 	if err != nil {
