@@ -14,14 +14,15 @@ func main() {
 		fmt.Printf("error opening database: %q", err)
 		return
 	}
-
-	const sql6 = `
-	DROP TABLE USER_KEYWORD;
-	`
-	if _, err := db.Exec(sql6); err != nil {
-		fmt.Printf("user_keyword drop 失敗: %q", err)
-		return
-	}
+	/*
+		const sql6 = `
+		DROP TABLE USER_KEYWORD;
+		`
+		if _, err := db.Exec(sql6); err != nil {
+			fmt.Printf("user_keyword drop 失敗: %q", err)
+			return
+		}
+	*/
 
 	const sql4 = `
 	DROP TABLE SLACK_USER;
