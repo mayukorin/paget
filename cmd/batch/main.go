@@ -56,11 +56,12 @@ func deliveryPaper(slackId string) {
 
 	for rows.Next() {
 		var keywordContent string
-		fmt.Printf(keywordContent)
+
 		if err := rows.Scan(&keywordContent); err != nil {
 			fmt.Printf("keyword content cannot get:%q\n", err)
 			return
 		}
+		fmt.Printf(keywordContent)
 		keywordSlice = append(keywordSlice, &arxiv.Field{Title: keywordContent})
 	}
 
