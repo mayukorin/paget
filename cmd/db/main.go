@@ -13,9 +13,31 @@ func main() {
 	if err != nil {
 		fmt.Printf("error opening database: %q", err)
 	}
+
+	const sql4 = `
+	DROP TABLE SLACK_USER;
+	`
+	if _, err := db.Exec(sql4); err != nil {
+		fmt.Printf("slack_user drop 失敗: %q", err)
+	}
+
+	const sql5 = `
+	DROP TABLE KEYWORD;
+	`
+	if _, err := db.Exec(sql5); err != nil {
+		fmt.Printf("keyword drop 失敗: %q", err)
+	}
+
+	const sql6 = `
+	DROP TABLE USER_KEYWORD;
+	`
+	if _, err := db.Exec(sql6); err != nil {
+		fmt.Printf("user_keyword drop 失敗: %q", err)
+	}
+
 	const sql1 = `
 	CREATE TABLE SLACK_USER (
-		id BIGINT PRIMARY KEY,
+		id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 		slack_id VARCHAR(20) NOT NULL,
 		slack_channel_id VARCHAR(20) NOT NULL
 	);
@@ -26,7 +48,7 @@ func main() {
 
 	const sql2 = `
 	CREATE TABLE KEYWORD (
-		id BIGINT PRIMARY KEY,
+		id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 		content VARCHAR(20) NOT NULL
 	);
 	`
@@ -36,7 +58,7 @@ func main() {
 
 	const sql3 = `
 	CREATE TABLE USER_KEYWORD (
-		id BIGINT PRIMARY KEY,
+		id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 		slack_user_id BIGINT,
 		keyword_id BIGINT,
 		foreign key (slack_user_id) references SLACK_USER(id),
