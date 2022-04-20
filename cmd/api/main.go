@@ -54,7 +54,7 @@ func indexUserKeyword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rows, err := db.Query("SELECT content FROM keyword JOIN user_keyword on (keyword.id = user_keyword.keyword_id) WHERE user_keyword.user_id = $1", userId)
+	rows, err := db.Query("SELECT content FROM keyword JOIN user_keyword on (keyword.id = user_keyword.keyword_id) WHERE user_keyword.slack_user_id = $1", userId)
 
 	if err != nil {
 		fmt.Printf("error when select keyword:%q\n", err)
