@@ -52,13 +52,13 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("slack_user not found")
 		r, err := db.Exec("INSERT INTO slack_user(slack_id, slack_channel_id) values ($1, $2)", s.UserID, s.ChannelID)
 		if err != nil {
-			fmt.Println("slack_user canot create")
+			fmt.Printf("slack_user canot create:%q\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		userId, err = r.LastInsertId()
 		if err != nil {
-			fmt.Println("userId cannot get")
+			fmt.Printf("userId cannot get:%q\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -67,20 +67,20 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 	var keywordId int64
 	if err := db.QueryRow("SELECT id FROM keyword WHERE content = $1", s.Text).Scan(&keywordId); err != nil {
 		if err != sql.ErrNoRows {
-			fmt.Println("error whern select keyword")
+			fmt.Printf("error whern select keyword%q\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		fmt.Println("keyword not found")
 		r, err := db.Exec("INSERT INTO keyword(content) values($1)", s.Text)
 		if err != nil {
-			fmt.Println("keyword cannot create")
+			fmt.Printf("keyword cannot create:%q\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		keywordId, err = r.LastInsertId()
 		if err != nil {
-			fmt.Println("keywordId cannot get")
+			fmt.Printf("keywordId cannot get:%q\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -88,7 +88,7 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 
 	res, err := db.Exec("INSERT INTO user_keyword(slack_user_id, keyword_id) values(?, ?)", userId, keywordId)
 	if err != nil {
-		fmt.Println("user_keyword cannot create")
+		fmt.Printf("user_keyword cannot create:%q\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
