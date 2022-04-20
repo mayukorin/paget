@@ -30,7 +30,7 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 
 	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
-		fmt.Printf("error opening database: %q", err)
+		fmt.Printf("error opening database: %q\n", err)
 	}
 
 	fmt.Println("create")
@@ -43,14 +43,14 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 	}
 	var userId int64
 	fmt.Println(s.UserID)
-	if err := db.QueryRow("SELECT id FROM slack_user WHERE slack_id = ?", s.UserID).Scan(&userId); err != nil {
+	if err := db.QueryRow("SELECT id FROM slack_user WHERE slack_id = $1", s.UserID).Scan(&userId); err != nil {
 		if err != sql.ErrNoRows {
-			fmt.Printf("error when select slack_user: %q", err)
+			fmt.Printf("error when select slack_user: %q\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		fmt.Println("slack_user not found")
-		r, err := db.Exec("INSERT INTO slack_user(slack_id, slack_channel_id) values (?, ?)", s.UserID, s.ChannelID)
+		r, err := db.Exec("INSERT INTO slack_user(slack_id, slack_channel_id) values ($1, $2)", s.UserID, s.ChannelID)
 		if err != nil {
 			fmt.Println("slack_user canot create")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -65,14 +65,14 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var keywordId int64
-	if err := db.QueryRow("SELECT id FROM keyword WHERE content = ?", s.Text).Scan(&keywordId); err != nil {
+	if err := db.QueryRow("SELECT id FROM keyword WHERE content = $1", s.Text).Scan(&keywordId); err != nil {
 		if err != sql.ErrNoRows {
 			fmt.Println("error whern select keyword")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		fmt.Println("keyword not found")
-		r, err := db.Exec("INSERT INTO keyword(content) values(?)", s.Text)
+		r, err := db.Exec("INSERT INTO keyword(content) values($1)", s.Text)
 		if err != nil {
 			fmt.Println("keyword cannot create")
 			w.WriteHeader(http.StatusInternalServerError)
