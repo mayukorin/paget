@@ -13,10 +13,12 @@ import (
 
 func indexUserKeyword(w http.ResponseWriter, r *http.Request) {
 
-	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	if err != nil {
-		fmt.Printf("error opening database: %q\n", err)
-	}
+	/*
+		db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+		if err != nil {
+			fmt.Printf("error opening database: %q\n", err)
+		}
+	*/
 
 	fmt.Println("list")
 
@@ -70,12 +72,14 @@ func indexUserKeyword(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteUserKeyword(w http.ResponseWriter, r *http.Request) {
+	/*
 
-	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	if err != nil {
-		fmt.Printf("error opening database: %q\n", err)
-	}
+		db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+		if err != nil {
+			fmt.Printf("error opening database: %q\n", err)
+		}
 
+	*/
 	fmt.Println("delete")
 
 	s, err := slack.SlashCommandParse(r)
@@ -130,11 +134,12 @@ func deleteUserKeyword(w http.ResponseWriter, r *http.Request) {
 
 func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 
-	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	if err != nil {
-		fmt.Printf("error opening database: %q\n", err)
-	}
-
+	/*
+		db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+		if err != nil {
+			fmt.Printf("error opening database: %q\n", err)
+		}
+	*/
 	fmt.Println("create")
 
 	s, err := slack.SlashCommandParse(r)
