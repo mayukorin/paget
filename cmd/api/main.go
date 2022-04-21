@@ -7,24 +7,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 	"github.com/slack-go/slack"
 )
-
-/*
-func createUserKeyword(c *gin.Context) {
-	fmt.Println("create")
-
-	s, err := slack.SlashCommandParse(r)
-	if err != nil {
-		fmt.Println("error")
-		w.WriteHeader(http.StatusInternalServerError)
-	}
-	fmt.Println(s.Command)
-
-}
-*/
 
 func indexUserKeyword(w http.ResponseWriter, r *http.Request) {
 
@@ -211,22 +196,9 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func hello(c *gin.Context) {
-	fmt.Println("hello")
-}
-
-func hello2(c *gin.Context) {
-	fmt.Println("hello")
-}
-
-func helloWorld(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("hello world!")
-}
-
 func main() {
 	http.HandleFunc("/add", createUserKeyword)
 	http.HandleFunc("/delete", deleteUserKeyword)
-	http.HandleFunc("/hello", helloWorld)
 	http.HandleFunc("/list", indexUserKeyword)
 	fmt.Println("main")
 	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
