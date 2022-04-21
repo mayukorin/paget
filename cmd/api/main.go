@@ -202,6 +202,8 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	fmt.Printf("mainmain")
+	fmt.Printf(db.Stats().WaitDuration.String())
 	http.HandleFunc("/add", createUserKeyword)
 	http.HandleFunc("/delete", deleteUserKeyword)
 	http.HandleFunc("/list", indexUserKeyword)
