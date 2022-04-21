@@ -11,6 +11,8 @@ import (
 	"github.com/slack-go/slack"
 )
 
+var db *sql.DB
+
 func indexUserKeyword(w http.ResponseWriter, r *http.Request) {
 
 	/*
@@ -202,7 +204,11 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	fmt.Printf("mainmain")
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		fmt.Printf("error opening database: %q\n", err)
+	}
+	fmt.Println("database open")
 	fmt.Printf(db.Stats().WaitDuration.String())
 	http.HandleFunc("/add", createUserKeyword)
 	http.HandleFunc("/delete", deleteUserKeyword)
