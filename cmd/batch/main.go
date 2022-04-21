@@ -67,7 +67,7 @@ func deliveryPaper(slackId string) {
 	}
 	fmt.Println("-----")
 	for i := 0; i < len(keywordSlice); i += 1 {
-		fmt.Println(reflect.TypeOf(keywordSlice[i]))
+		fmt.Println(reflect.TypeOf(keywordSlice[i].Title))
 	}
 
 	resChan, cancel, err := arxiv.Search(context.Background(), &arxiv.Query{
