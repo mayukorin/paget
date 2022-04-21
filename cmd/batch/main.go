@@ -64,10 +64,6 @@ func deliveryPaper(slackId string) {
 		fmt.Println(keywordContent)
 		keywordSlice = append(keywordSlice, &arxiv.Field{Title: keywordContent})
 	}
-	fmt.Println("-----")
-	for i := 0; i < len(keywordSlice); i += 1 {
-		fmt.Println(keywordSlice[i].Title)
-	}
 
 	resChan, cancel, err := arxiv.Search(context.Background(), &arxiv.Query{
 		Filters: []*arxiv.Filter{

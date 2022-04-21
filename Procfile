@@ -1,1 +1,1 @@
-web: bin/api
+web: bin/start-pgbouncer-stunnel bin/api
