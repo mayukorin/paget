@@ -65,7 +65,7 @@ func deliveryPaper(slackId string) {
 		keywordSlice = append(keywordSlice, &arxiv.Field{Title: keywordContent})
 	}
 	fmt.Println("-----")
-	for i := 0; i < len(keywordSlice); i += 2 {
+	for i := 0; i < len(keywordSlice); i += 1 {
 		fmt.Println(keywordSlice[i])
 	}
 
