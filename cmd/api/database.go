@@ -13,5 +13,6 @@ func init() {
 	if err != nil {
 		fmt.Printf("error opening database: %q\n", err)
 	}
+	fmt.Println("database open")
 	fmt.Printf(db.Stats().WaitDuration.String())
 }
