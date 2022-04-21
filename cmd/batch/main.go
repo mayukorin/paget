@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
-	"reflect"
 	"sync"
 
 	"github.com/joho/godotenv"
@@ -67,17 +66,14 @@ func deliveryPaper(slackId string) {
 	}
 	fmt.Println("-----")
 	for i := 0; i < len(keywordSlice); i += 1 {
-		fmt.Println(reflect.TypeOf(keywordSlice[i].Title))
+		fmt.Println(keywordSlice[i].Title)
 	}
 
 	resChan, cancel, err := arxiv.Search(context.Background(), &arxiv.Query{
 		Filters: []*arxiv.Filter{
 			{
-				Op: arxiv.OpAnd,
-				Fields: []*arxiv.Field{
-					&arxiv.Field{Title: "deep learning"},
-					&arxiv.Field{Title: "CSI feedback"},
-				},
+				Op:     arxiv.OpAnd,
+				Fields: keywordSlice,
 			},
 		},
 		MaxResultsPerPage: 3,
