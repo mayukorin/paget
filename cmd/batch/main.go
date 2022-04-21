@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"reflect"
 	"sync"
 
 	"github.com/joho/godotenv"
@@ -66,7 +67,7 @@ func deliveryPaper(slackId string) {
 	}
 	fmt.Println("-----")
 	for i := 0; i < len(keywordSlice); i += 1 {
-		fmt.Println(keywordSlice[i])
+		fmt.Println(reflect.TypeOf(keywordSlice[i]))
 	}
 
 	resChan, cancel, err := arxiv.Search(context.Background(), &arxiv.Query{
