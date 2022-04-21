@@ -12,6 +12,7 @@ import (
 )
 
 var db *sql.DB
+var dbErr error
 
 func indexUserKeyword(w http.ResponseWriter, r *http.Request) {
 
@@ -204,9 +205,9 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-	if err != nil {
-		fmt.Printf("error opening database: %q\n", err)
+	db, dbErr = sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	if dbErr != nil {
+		fmt.Printf("error opening database: %q\n", dbErr)
 	}
 	fmt.Println("database open")
 	fmt.Printf(db.Stats().WaitDuration.String())
