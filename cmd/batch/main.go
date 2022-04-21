@@ -61,10 +61,10 @@ func deliveryPaper(slackId string) {
 			fmt.Printf("keyword content cannot get:%q\n", err)
 			return
 		}
-		fmt.Printf(keywordContent)
+		fmt.Println(keywordContent)
 		keywordSlice = append(keywordSlice, &arxiv.Field{Title: keywordContent})
 	}
-
+	fmt.Println("-----")
 	for i := 0; i < len(keywordSlice); i += 2 {
 		fmt.Println(keywordSlice[i])
 	}
