@@ -7,12 +7,12 @@
  
 # 特徴
  
-- 論文検索に使いたいキーワードを複数登録できます．
-- 毎朝 8 時に自動配信してくれます
+- 論文検索に使いたいキーワードを__複数__登録できます．
+- 登録したキーワードがタイトルに含まれる論文(arxiv で検索）を自動配信してくれます．
 
 # 開発理由
 
-自分の読みたい論文を，自分で調べなくても自動配信してくれるアプリがあればよいなと思い，作りました．
+読みたい論文を調べなくても自動配信してくれるアプリがあればよいなと思い，作りました．
 
 # 開発期間
 
@@ -21,16 +21,16 @@
 # デモ
  
 - 論文検索に使いたいキーワードを登録
-https://user-images.githubusercontent.com/63027348/160748897-202fcf6e-1741-4377-8dcb-556a6d2fe42e.mp4
+https://user-images.githubusercontent.com/63027348/164585306-ee882d0c-5354-4121-85e6-760387cf6b9a.mp4
 
 - 論文検索に使いたいキーワードから削除
-https://user-images.githubusercontent.com/63027348/160748658-420f8670-6ff3-4aa3-aeea-fb6a3de857b5.mp4
+https://user-images.githubusercontent.com/63027348/164586179-d0a37c81-1694-4b6c-bc0f-7a73488836d9.mp4
 
-- 論文検索に使いたいキーワードを指定
-https://user-images.githubusercontent.com/63027348/160749223-af52bfed-215e-4425-b897-5435dd145ab5.mp4
+- 論文検索に使いたいキーワード一覧
+https://user-images.githubusercontent.com/63027348/164585522-64028952-2ddb-4c20-8e36-711bdad51795.mp4
 
 - 論文の自動配信
-https://user-images.githubusercontent.com/63027348/160749223-af52bfed-215e-4425-b897-5435dd145ab5.mp4
+https://user-images.githubusercontent.com/63027348/164585831-30c606a6-e3a9-4b53-8c7d-595abd7d0493.mp4
 
 
 
