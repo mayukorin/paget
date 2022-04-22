@@ -1,0 +1,36 @@
+# docker-compose のバージョン
+version: '3'
+
+# 各コンテナの情報
+services:
+
+  # postgres サービス
+  postgres:
+    # コンテナの名前
+    container_name: paget_postgres
+    # Dockerfile のディレクトリパス
+    build:
+      context: .
+      dockerfile: ./docker/postgres/Dockerfile
+    # postgres 設定
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=paget_db
+
+  # golang アプリケーション
+  app:
+    container_name: paget_app
+    # postgres をビルドした後に app をビルド
+    depends_on:
+      - postgres
+    # Dockerfile を指定
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+    tty: true
+    ports:
+      - 1323:1323
+    # フォルダ共有（ホストOS:コンテナ）
+    volumes:
+      - .:/workspace/
+    command: go run ./cmd/api/main.go
