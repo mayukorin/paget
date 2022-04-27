@@ -8,6 +8,7 @@ import (
 	"os"
 
 	_ "github.com/lib/pq"
+	"github.com/mayukorin/paget"
 	"github.com/slack-go/slack"
 )
 
@@ -32,14 +33,8 @@ func indexUserKeyword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var userId int64
-	if err := db.QueryRow("SELECT id FROM slack_user WHERE slack_id = $1", s.UserID).Scan(&userId); err != nil {
-		if err != sql.ErrNoRows {
-			fmt.Printf("error when select slack_user:%q\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		fmt.Printf("slack_user canot found")
+	userId, err := paget.FindUserId(db, s.UserID)
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

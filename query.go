@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func findUserId(db *sql.DB, slack_user_id string) (userId int64, err error) {
+func FindUserId(db *sql.DB, slack_user_id string) (userId int64, err error) {
 	userId = 0
 	if err = db.QueryRow("SELECT id FROM slack_user WHERE slack_id = $1", slack_user_id).Scan(&userId); err != nil {
 		if err != sql.ErrNoRows {
