@@ -9,6 +9,7 @@ import (
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/mayukorin/paget"
 	"github.com/orijtech/arxiv/v1"
 	"github.com/slack-go/slack"
 )
@@ -35,15 +36,11 @@ func deliveryPaper(slackId string) {
 
 	fmt.Println("batch")
 
-	var userId int64
-	if err := db.QueryRow("SELECT id FROM slack_user WHERE slack_id = $1", slackId).Scan(&userId); err != nil {
-		if err != sql.ErrNoRows {
-			fmt.Printf("error when select slack_user:%q\n", err)
-			return
-		}
-		fmt.Printf("slack_user canot found")
+	userId, err := paget.FindUserId(db, slackId)
+	if err != nil {
 		return
 	}
+
 	fmt.Println(userId)
 	rows, err := db.Query("SELECT content FROM keyword JOIN user_keyword on (keyword.id = user_keyword.keyword_id) WHERE user_keyword.slack_user_id = $1", userId)
 
