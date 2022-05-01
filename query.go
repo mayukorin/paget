@@ -29,7 +29,7 @@ func FindOrCreateUserId(db *sql.DB, slack_user_id string, channel_id string) (us
 
 func FindKeywordId(db *sql.DB, keyword_content string) (keywordId int64, err error) {
 
-	if err = db.QueryRow("SELECT id FROM keyword WHERE content = $1", keyword_content).Scan(&keyword_content); err != nil {
+	if err = db.QueryRow("SELECT id FROM keyword WHERE content = $1", keyword_content).Scan(&keywordId); err != nil {
 		if err != sql.ErrNoRows {
 			fmt.Printf("error whern select keyword%q\n", err)
 		} else {
