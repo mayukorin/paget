@@ -184,7 +184,7 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
+	fmt.Println(keywordId)
 	var userKeywordId int64
 	if err := db.QueryRow("INSERT INTO user_keyword(slack_user_id, keyword_id) values($1, $2) RETURNING id", userId, keywordId).Scan(&userKeywordId); err != nil {
 		fmt.Printf("keyword canot create:%q\n", err)
