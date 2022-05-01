@@ -39,13 +39,22 @@ func indexUserKeyword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rows, err := db.Query("SELECT content FROM keyword JOIN user_keyword on (keyword.id = user_keyword.keyword_id) WHERE user_keyword.slack_user_id = $1", userId)
+	/*
+		rows, err := db.Query("SELECT content FROM keyword JOIN user_keyword on (keyword.id = user_keyword.keyword_id) WHERE user_keyword.slack_user_id = $1", userId)
 
+		if err != nil {
+			fmt.Printf("error when select keyword:%q\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	*/
+
+	rows, err := paget.IndexKeywordContent(db, userId)
 	if err != nil {
-		fmt.Printf("error when select keyword:%q\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
 	responseMessage := ""
 	for rows.Next() {
 		var keywordContent string
@@ -86,14 +95,22 @@ func deleteUserKeyword(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	var deleteKeywordId int64
-	if err := db.QueryRow("SELECT id FROM keyword WHERE content = $1", s.Text).Scan(&deleteKeywordId); err != nil {
-		if err != sql.ErrNoRows {
-			fmt.Printf("error when select keyword:%q\n", err)
+	/*
+		var deleteKeywordId int64
+		if err := db.QueryRow("SELECT id FROM keyword WHERE content = $1", s.Text).Scan(&deleteKeywordId); err != nil {
+			if err != sql.ErrNoRows {
+				fmt.Printf("error when select keyword:%q\n", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			fmt.Printf("keyword canot found")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		fmt.Printf("keyword canot found")
+	*/
+
+	deleteKeywordId, err := paget.FindKeywordId(db, s.Text)
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -140,36 +157,32 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	var userId int64
-	fmt.Println(s.UserID)
-	if err := db.QueryRow("SELECT id FROM slack_user WHERE slack_id = $1", s.UserID).Scan(&userId); err != nil {
-		if err != sql.ErrNoRows {
-			fmt.Printf("error when select slack_user: %q\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		fmt.Println("slack_user not found")
-		if err := db.QueryRow("INSERT INTO slack_user(slack_id, slack_channel_id) values ($1, $2) RETURNING id", s.UserID, s.ChannelID).Scan(&userId); err != nil {
-			fmt.Printf("slack_user canot create:%q\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
+
+	userId, err := paget.FindOrCreateUserId(db, s.UserID, s.ChannelID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
-	var keywordId int64
-	if err := db.QueryRow("SELECT id FROM keyword WHERE content = $1", s.Text).Scan(&keywordId); err != nil {
-		if err != sql.ErrNoRows {
-			fmt.Printf("error whern select keyword%q\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+	/*
+		keywordId, err := paget.FindKeywordId(db, s.Text)
+		if err != nil {
+			if err != sql.ErrNoRows {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			} else {
+				if err := db.QueryRow("INSERT INTO keyword(content) values($1) RETURNING id", s.Text).Scan(&keywordId); err != nil {
+					fmt.Printf("keyword canot create:%q\n", err)
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+			}
 		}
-		fmt.Println("keyword not found")
-
-		if err := db.QueryRow("INSERT INTO keyword(content) values($1) RETURNING id", s.Text).Scan(&keywordId); err != nil {
-			fmt.Printf("keyword canot create:%q\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
+	*/
+	keywordId, err := paget.FindOrCreateKeywordId(db, s.Text)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	var userKeywordId int64
