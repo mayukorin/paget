@@ -24,8 +24,6 @@ func indexUserKeyword(w http.ResponseWriter, r *http.Request) {
 		}
 	*/
 
-	fmt.Println("list")
-
 	s, err := slack.SlashCommandParse(r)
 	if err != nil {
 		fmt.Println("error")
