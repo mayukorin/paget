@@ -7,7 +7,6 @@ import (
 	"os"
 	"sync"
 
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/mayukorin/paget"
 	"github.com/orijtech/arxiv/v1"
@@ -110,12 +109,13 @@ func deliveryPaper(slackId string) {
 }
 
 func main() {
-
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Printf("%s\n", err)
-		return
-	}
+	/*
+		err := godotenv.Load()
+		if err != nil {
+			fmt.Printf("%s\n", err)
+			return
+		}
+	*/
 
 	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
