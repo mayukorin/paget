@@ -49,6 +49,7 @@ func deliveryPaper(slackId string) {
 	}
 
 	keywordSlice := []*arxiv.Field{}
+	keywordJoin := ""
 
 	for rows.Next() {
 		var keywordContent string
@@ -58,14 +59,18 @@ func deliveryPaper(slackId string) {
 			return
 		}
 		fmt.Println(keywordContent)
+		keywordJoin += keywordContent + " "
 		keywordSlice = append(keywordSlice, &arxiv.Field{Title: keywordContent})
 	}
-
+	fmt.Printf(keywordJoin)
 	resChan, cancel, err := arxiv.Search(context.Background(), &arxiv.Query{
 		Filters: []*arxiv.Filter{
 			{
-				Op:     arxiv.OpAnd,
-				Fields: keywordSlice,
+				Op: arxiv.OpAnd,
+				// Fields: keywordSlice,
+				Fields: []*arxiv.Field{
+					{Title: keywordJoin},
+				},
 			},
 		},
 		MaxResultsPerPage: 10,
