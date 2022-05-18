@@ -66,11 +66,13 @@ func deliveryPaper(slackId string) {
 	resChan, cancel, err := arxiv.Search(context.Background(), &arxiv.Query{
 		Filters: []*arxiv.Filter{
 			{
-				Op: arxiv.OpAnd,
-				// Fields: keywordSlice,
-				Fields: []*arxiv.Field{
-					{Title: keywordJoin},
-				},
+				Op:     arxiv.OpAnd,
+				Fields: keywordSlice,
+				/*
+					Fields: []*arxiv.Field{
+						{Title: keywordJoin},
+					},
+				*/
 			},
 		},
 		MaxResultsPerPage: 10,
