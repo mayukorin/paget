@@ -69,7 +69,7 @@ func deliveryPaper(slackId string) {
 			},
 		},
 		MaxResultsPerPage: 3,
-		SortBy:            arxiv.SortBySubmittedDate,
+		SortBy:            arxiv.SortByRelevance,
 		PageNumber:        0,
 		MaxPageNumber:     1,
 	})
@@ -116,6 +116,7 @@ func main() {
 			return
 		}
 	*/
+	var wg sync.WaitGroup
 
 	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
