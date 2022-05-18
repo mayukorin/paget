@@ -75,7 +75,7 @@ func deliveryPaper(slackId string) {
 				*/
 			},
 		},
-		MaxResultsPerPage: 10,
+		MaxResultsPerPage: 20,
 		SortBy:            arxiv.SortByRelevance,
 		PageNumber:        0,
 		MaxPageNumber:     1,
