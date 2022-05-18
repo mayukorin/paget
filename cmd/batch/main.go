@@ -116,7 +116,6 @@ func main() {
 			return
 		}
 	*/
-	var wg sync.WaitGroup
 
 	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
