@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 
 	_ "github.com/lib/pq"
@@ -85,14 +86,19 @@ func deliveryPaper(slackId string) {
 		feed := resPage.Feed
 		for _, entry := range feed.Entry {
 			fmt.Println(entry.ID)
-			_, _, err := api.PostMessage(
-				channel.ID, // 構造体の埋め込み
-				slack.MsgOptionText(entry.ID, false),
-			)
-			if err != nil {
-				fmt.Printf("%s\n", err)
-				return
-			}
+			startIndex := strings.LastIndex(entry.ID, "/")
+			endIndex := strings.LastIndex(entry.ID, ".")
+			fmt.Println(entry.ID[startIndex : endIndex+1])
+			/*
+				_, _, err := api.PostMessage(
+					channel.ID, // 構造体の埋め込み
+					slack.MsgOptionText(entry.ID, false),
+				)
+				if err != nil {
+					fmt.Printf("%s\n", err)
+					return
+				}
+			*/
 		}
 		if resPage.PageNumber >= 2 {
 			cancel()
