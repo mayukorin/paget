@@ -19,7 +19,7 @@ var wg sync.WaitGroup // 行儀良くない？
 func deliveryPaper(slackId string) {
 
 	api := slack.New(os.Getenv("SLACK_BOT_TOKEN"))
-	channel, _, _, err := api.OpenConversation(
+	_, _, _, err := api.OpenConversation(
 		&(slack.OpenConversationParameters{
 			ReturnIM: true,
 			Users:    []string{slackId},
