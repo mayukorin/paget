@@ -87,8 +87,7 @@ func deliveryPaper(slackId string) {
 		for _, entry := range feed.Entry {
 			fmt.Println(entry.ID)
 			startIndex := strings.LastIndex(entry.ID, "/")
-			endIndex := strings.LastIndex(entry.ID, ".")
-			fmt.Println(entry.ID[startIndex : endIndex+1])
+			fmt.Println(entry.ID[startIndex+1 : startIndex+5])
 			/*
 				_, _, err := api.PostMessage(
 					channel.ID, // 構造体の埋め込み
