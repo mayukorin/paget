@@ -49,7 +49,6 @@ func deliveryPaper(slackId string) {
 	}
 
 	keywordSlice := []*arxiv.Field{}
-	keywordJoin := ""
 
 	for rows.Next() {
 		var keywordContent string
@@ -58,21 +57,14 @@ func deliveryPaper(slackId string) {
 			fmt.Printf("keyword content cannot get:%q\n", err)
 			return
 		}
-		fmt.Println(keywordContent)
-		keywordJoin += keywordContent + " "
 		keywordSlice = append(keywordSlice, &arxiv.Field{Title: keywordContent})
 	}
-	fmt.Printf(keywordJoin)
+
 	resChan, cancel, err := arxiv.Search(context.Background(), &arxiv.Query{
 		Filters: []*arxiv.Filter{
 			{
 				Op:     arxiv.OpAnd,
 				Fields: keywordSlice,
-				/*
-					Fields: []*arxiv.Field{
-						{Title: keywordJoin},
-					},
-				*/
 			},
 		},
 		MaxResultsPerPage: 20,
@@ -92,6 +84,7 @@ func deliveryPaper(slackId string) {
 		}
 		feed := resPage.Feed
 		for _, entry := range feed.Entry {
+			fmt.Println(entry.ID)
 			_, _, err := api.PostMessage(
 				channel.ID, // 構造体の埋め込み
 				slack.MsgOptionText(entry.ID, false),
@@ -106,12 +99,13 @@ func deliveryPaper(slackId string) {
 		}
 	}
 
-	_, _, err = api.CloseConversation(channel.ID)
-
-	if err != nil {
-		fmt.Printf("%s\n", err)
-		return
-	}
+	// _, _, err = api.CloseConversation(channel.ID)
+	/*
+		if err != nil {
+			fmt.Printf("%s\n", err)
+			return
+		}
+	*/
 	wg.Done()
 }
 
