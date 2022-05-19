@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 	"sync"
 
@@ -14,12 +15,31 @@ import (
 	"github.com/slack-go/slack"
 )
 
+type Paper struct {
+	ID             string
+	submittedMonth string
+}
+
+type Papers []Paper
+
+func (p Papers) Len() int {
+	return len(p)
+}
+
+func (p Papers) Swap(i, j int) {
+	p[i], p[j] = p[j], p[i]
+}
+
+func (p Papers) Less(i, j int) bool {
+	return p[i].submittedMonth > p[j].submittedMonth // 逆
+}
+
 var wg sync.WaitGroup // 行儀良くない？
 
 func deliveryPaper(slackId string) {
 
 	api := slack.New(os.Getenv("SLACK_BOT_TOKEN"))
-	_, _, _, err := api.OpenConversation(
+	channel, _, _, err := api.OpenConversation(
 		&(slack.OpenConversationParameters{
 			ReturnIM: true,
 			Users:    []string{slackId},
@@ -77,6 +97,7 @@ func deliveryPaper(slackId string) {
 	if err != nil {
 		fmt.Printf("%s\n", err)
 	}
+	var papers Papers = []Paper{} // これだけvar使ってる．
 
 	for resPage := range resChan {
 		if err := resPage.Err; err != nil {
@@ -88,6 +109,7 @@ func deliveryPaper(slackId string) {
 			fmt.Println(entry.ID)
 			startIndex := strings.LastIndex(entry.ID, "/")
 			fmt.Println(entry.ID[startIndex+1 : startIndex+5])
+			papers = append(papers, Paper{entry.ID, entry.ID[startIndex+1 : startIndex+5]})
 			/*
 				_, _, err := api.PostMessage(
 					channel.ID, // 構造体の埋め込み
@@ -101,6 +123,22 @@ func deliveryPaper(slackId string) {
 		}
 		if resPage.PageNumber >= 2 {
 			cancel()
+		}
+	}
+	sort.Sort(papers)
+
+	for index, paper := range papers {
+		if index >= 5 {
+			break
+		}
+		_, _, err := api.PostMessage(
+			channel.ID, // 構造体の埋め込み
+			slack.MsgOptionText(paper.ID, false),
+		)
+		fmt.Println(paper.ID)
+		if err != nil {
+			fmt.Printf("%s\n", err)
+			return
 		}
 	}
 
