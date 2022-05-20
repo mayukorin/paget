@@ -109,7 +109,7 @@ func deliveryPaper(slackId string) {
 			fmt.Println(entry.ID)
 			startIndex := strings.LastIndex(entry.ID, "/")
 			fmt.Println(entry.ID[startIndex+1 : startIndex+5])
-			papers = append(papers, Paper{entry.ID, entry.ID[startIndex+1 : startIndex+5]})
+			papers = append(papers, Paper{entry.ID, entry.ID[startIndex+1:startIndex+5] + entry.ID[startIndex+6:startIndex+8]})
 			/*
 				_, _, err := api.PostMessage(
 					channel.ID, // 構造体の埋め込み
