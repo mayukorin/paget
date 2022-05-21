@@ -126,20 +126,21 @@ func deliveryPaper(slackId string) {
 		}
 	}
 	sort.Sort(papers)
-
+	message := ""
 	for index, paper := range papers {
 		if index >= 5 {
 			break
 		}
-		_, _, err := api.PostMessage(
-			channel.ID, // 構造体の埋め込み
-			slack.MsgOptionText(paper.ID, false),
-		)
-		fmt.Println(paper.ID)
-		if err != nil {
-			fmt.Printf("%s\n", err)
-			return
-		}
+		message = paper.ID + "\n"
+	}
+
+	_, _, err = api.PostMessage(
+		channel.ID, // 構造体の埋め込み
+		slack.MsgOptionText(message, false),
+	)
+	if err != nil {
+		fmt.Printf("%s\n", err)
+		return
 	}
 
 	// _, _, err = api.CloseConversation(channel.ID)
