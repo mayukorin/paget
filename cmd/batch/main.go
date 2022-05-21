@@ -131,7 +131,7 @@ func deliveryPaper(slackId string) {
 		if index >= 5 {
 			break
 		}
-		message = paper.ID + "\n"
+		message += paper.ID + "\n"
 	}
 
 	_, _, err = api.PostMessage(
