@@ -183,13 +183,11 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println(keywordId)
-	var userKeywordId int64
-	if err := db.QueryRow("INSERT INTO user_keyword(slack_user_id, keyword_id) values($1, $2) RETURNING id", userId, keywordId).Scan(&userKeywordId); err != nil {
-		fmt.Printf("keyword canot create:%q\n", err)
+	userKeywordId, err := paget.CreateUserKeyword(db, userId, keywordId)
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
 	fmt.Println(userKeywordId)
 	params := &slack.Msg{Text: s.Text + "を検索のキーワードに追加しました！"}
 	b, err := json.Marshal(params)

@@ -58,3 +58,11 @@ func IndexKeywordContent(db *sql.DB, user_id int64) (rows *sql.Rows, err error) 
 	}
 	return
 }
+
+func CreateUserKeyword(db *sql.DB, user_id int64, keyword_id int64) (userKeywordId int64, err error) {
+	err = db.QueryRow("INSERT INTO user_keyword(slack_user_id, keyword_id) values($1, $2) RETURNING id", user_id, keyword_id).Scan(&userKeywordId)
+	if err != nil {
+		fmt.Printf("keyword canot create:%q\n", err)
+	}
+	return
+}
