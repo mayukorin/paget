@@ -48,7 +48,7 @@ func main() {
 	);
 	`
 	if _, err := db.Exec(sql1); err != nil {
-		fmt.Printf("slack_user 失敗: %q", err)
+		fmt.Printf("slack_user create 失敗: %q", err)
 		return
 	}
 
@@ -59,7 +59,7 @@ func main() {
 	);
 	`
 	if _, err := db.Exec(sql2); err != nil {
-		fmt.Printf("keyword 失敗: %q", err)
+		fmt.Printf("keyword create 失敗: %q", err)
 		return
 	}
 
@@ -73,7 +73,7 @@ func main() {
 	);	
 	`
 	if _, err := db.Exec(sql3); err != nil {
-		fmt.Printf("user keyword 失敗: %q", err)
+		fmt.Printf("user keyword create 失敗: %q", err)
 		return
 	}
 }

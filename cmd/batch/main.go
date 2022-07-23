@@ -5,17 +5,39 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"sort"
+	"strings"
 	"sync"
 
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/mayukorin/paget"
 	"github.com/orijtech/arxiv/v1"
 	"github.com/slack-go/slack"
 )
 
+type Paper struct {
+	ID             string
+	submittedMonth string
+}
+
+type Papers []Paper
+
+func (p Papers) Len() int {
+	return len(p)
+}
+
+func (p Papers) Swap(i, j int) {
+	p[i], p[j] = p[j], p[i]
+}
+
+func (p Papers) Less(i, j int) bool {
+	return p[i].submittedMonth > p[j].submittedMonth // 逆
+}
+
 var wg sync.WaitGroup // 行儀良くない？
 
 func deliveryPaper(slackId string) {
+
 	api := slack.New(os.Getenv("SLACK_BOT_TOKEN"))
 	channel, _, _, err := api.OpenConversation(
 		&(slack.OpenConversationParameters{
@@ -35,20 +57,15 @@ func deliveryPaper(slackId string) {
 
 	fmt.Println("batch")
 
-	var userId int64
-	if err := db.QueryRow("SELECT id FROM slack_user WHERE slack_id = $1", slackId).Scan(&userId); err != nil {
-		if err != sql.ErrNoRows {
-			fmt.Printf("error when select slack_user:%q\n", err)
-			return
-		}
-		fmt.Printf("slack_user canot found")
+	userId, err := paget.FindUserId(db, slackId)
+	if err != nil {
 		return
 	}
-	fmt.Println(userId)
-	rows, err := db.Query("SELECT content FROM keyword JOIN user_keyword on (keyword.id = user_keyword.keyword_id) WHERE user_keyword.slack_user_id = $1", userId)
 
+	fmt.Println(userId)
+	// rows, err := db.Query("SELECT content FROM keyword JOIN user_keyword on (keyword.id = user_keyword.keyword_id) WHERE user_keyword.slack_user_id = $1", userId)
+	rows, err := paget.IndexKeywordContent(db, userId)
 	if err != nil {
-		fmt.Printf("error when select keyword:%q\n", err)
 		return
 	}
 
@@ -61,7 +78,6 @@ func deliveryPaper(slackId string) {
 			fmt.Printf("keyword content cannot get:%q\n", err)
 			return
 		}
-		fmt.Println(keywordContent)
 		keywordSlice = append(keywordSlice, &arxiv.Field{Title: keywordContent})
 	}
 
@@ -72,8 +88,8 @@ func deliveryPaper(slackId string) {
 				Fields: keywordSlice,
 			},
 		},
-		MaxResultsPerPage: 3,
-		SortBy:            arxiv.SortBySubmittedDate,
+		MaxResultsPerPage: 20,
+		SortBy:            arxiv.SortByRelevance,
 		PageNumber:        0,
 		MaxPageNumber:     1,
 	})
@@ -81,6 +97,7 @@ func deliveryPaper(slackId string) {
 	if err != nil {
 		fmt.Printf("%s\n", err)
 	}
+	var papers Papers = []Paper{} // これだけvar使ってる．
 
 	for resPage := range resChan {
 		if err := resPage.Err; err != nil {
@@ -89,36 +106,61 @@ func deliveryPaper(slackId string) {
 		}
 		feed := resPage.Feed
 		for _, entry := range feed.Entry {
-			_, _, err := api.PostMessage(
-				channel.ID, // 構造体の埋め込み
-				slack.MsgOptionText(entry.ID, false),
-			)
-			if err != nil {
-				fmt.Printf("%s\n", err)
-				return
-			}
+			fmt.Println(entry.ID)
+			startIndex := strings.LastIndex(entry.ID, "/")
+			fmt.Println(entry.ID[startIndex+1 : startIndex+5])
+			papers = append(papers, Paper{entry.ID, entry.ID[startIndex+1:startIndex+5] + entry.ID[startIndex+6:startIndex+8]})
+			/*
+				_, _, err := api.PostMessage(
+					channel.ID, // 構造体の埋め込み
+					slack.MsgOptionText(entry.ID, false),
+				)
+				if err != nil {
+					fmt.Printf("%s\n", err)
+					return
+				}
+			*/
 		}
 		if resPage.PageNumber >= 2 {
 			cancel()
 		}
 	}
+	sort.Sort(papers)
+	message := ""
+	for index, paper := range papers {
+		if index >= 5 {
+			break
+		}
+		message += paper.ID + "\n"
+	}
 
-	_, _, err = api.CloseConversation(channel.ID)
-
+	_, _, err = api.PostMessage(
+		channel.ID, // 構造体の埋め込み
+		slack.MsgOptionText(message, false),
+	)
 	if err != nil {
 		fmt.Printf("%s\n", err)
 		return
 	}
+
+	// _, _, err = api.CloseConversation(channel.ID)
+	/*
+		if err != nil {
+			fmt.Printf("%s\n", err)
+			return
+		}
+	*/
 	wg.Done()
 }
 
 func main() {
-
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Printf("%s\n", err)
-		return
-	}
+	/*
+		err := godotenv.Load()
+		if err != nil {
+			fmt.Printf("%s\n", err)
+			return
+		}
+	*/
 
 	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
