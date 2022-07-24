@@ -66,3 +66,11 @@ func CreateUserKeyword(db *sql.DB, user_id int64, keyword_id int64) (userKeyword
 	}
 	return
 }
+
+func DeleteUserKeyword(db *sql.DB, userId int64, keywordId int64) (err error) {
+	_, err = db.Exec("DELETE FROM user_keyword WHERE keyword_id = $1 and slack_user_id = $2", keywordId, userId)
+	if err != nil {
+		fmt.Printf("user_keyword cannot delete: %q\n", err)
+	}
+	return
+}

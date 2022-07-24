@@ -119,9 +119,8 @@ func deleteUserKeyword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = db.Exec("DELETE FROM user_keyword WHERE keyword_id = $1 and slack_user_id = $2", deleteKeywordId, userId)
+	err = paget.DeleteUserKeyword(db, userId, deleteKeywordId)
 	if err != nil {
-		fmt.Printf("user_keyword cannot delete: %q\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
