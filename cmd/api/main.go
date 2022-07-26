@@ -200,6 +200,41 @@ func createUserKeyword(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func searchPapers(w http.ResponseWriter, r *http.Request) {
+
+	s, err := slack.SlashCommandParse(r)
+	if err != nil {
+		fmt.Println("error")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	userId, err := paget.FindUserId(db, s.UserID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	papers := paget.SearchArxivPapers(db, userId)
+	message := ""
+
+	for index, paper := range papers {
+		if index >= 5 {
+			break
+		}
+		message += paper.ID + "\n"
+	}
+
+	params := &slack.Msg{Text: "ヒットした論文： " + message}
+	b, err := json.Marshal(params)
+	if err != nil {
+		fmt.Println("error")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(b)
+}
+
 func main() {
 	db, dbErr = sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if dbErr != nil {
@@ -210,6 +245,7 @@ func main() {
 	http.HandleFunc("/add", createUserKeyword)
 	http.HandleFunc("/delete", deleteUserKeyword)
 	http.HandleFunc("/list", indexUserKeyword)
+	http.HandleFunc("/search", searchPapers)
 	fmt.Println("main")
 	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 	/*
