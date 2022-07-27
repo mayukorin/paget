@@ -89,7 +89,7 @@ func main() {
 	*/
 
 	const sql5 = `
-	ALTER TABLE SLACK_USER ALTER COLUMN latest_matched_paper SET DEFAULT "";
+	ALTER TABLE SLACK_USER ALTER COLUMN latest_matched_paper SET DEFAULT "default";
 	`
 	if _, err := db.Exec(sql5); err != nil {
 		fmt.Printf("user keyword create 失敗: %q", err)
