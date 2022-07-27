@@ -60,7 +60,7 @@ func deliveryPaper(slackId string) {
 
 	papers := paget.SearchArxivPapers(db, userId)
 
-	latestMatchedPaper, err := paget.FindLatestMatchedPaper(db, userId)
+	latestMatchedPaper, err := paget.FindLatestMatchedPaper(db, slackId)
 
 	if papers[0].ID != latestMatchedPaper {
 		err = paget.UpdateUserLatestMatchedPaper(db, userId, latestMatchedPaper)

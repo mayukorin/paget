@@ -217,7 +217,7 @@ func searchPapers(w http.ResponseWriter, r *http.Request) {
 	papers := paget.SearchArxivPapers(db, userId)
 	message := ""
 
-	latestMatchedPaper, err := paget.FindLatestMatchedPaper(db, userId)
+	latestMatchedPaper, err := paget.FindLatestMatchedPaper(db, s.UserID)
 
 	if papers[0].ID != latestMatchedPaper {
 		fmt.Println("not match next update")

@@ -40,7 +40,7 @@ func FindUserId(db *sql.DB, slack_user_id string) (userId int64, err error) {
 	return
 }
 
-func FindLatestMatchedPaper(db *sql.DB, slack_user_id int64) (latestMatchedPaper string, err error) {
+func FindLatestMatchedPaper(db *sql.DB, slack_user_id string) (latestMatchedPaper string, err error) {
 
 	if err = db.QueryRow("SELECT latest_matched_paper FROM slack_user WHERE slack_id = $1", slack_user_id).Scan(&latestMatchedPaper); err != nil {
 		if err != sql.ErrNoRows {
