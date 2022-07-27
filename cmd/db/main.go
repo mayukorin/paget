@@ -80,7 +80,7 @@ func main() {
 	*/
 
 	const sql4 = `
-	ALTER TABLE USER ADD COLUMN latest_matched_paper TEXT;
+	ALTER TABLE SLACK_USER ADD COLUMN latest_matched_paper TEXT;
 	`
 	if _, err := db.Exec(sql4); err != nil {
 		fmt.Printf("user keyword create 失敗: %q", err)
