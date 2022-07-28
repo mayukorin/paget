@@ -63,7 +63,7 @@ func deliveryPaper(slackId string) {
 	latestMatchedPaper, err := paget.FindLatestMatchedPaper(db, slackId)
 
 	if papers[0].ID != latestMatchedPaper {
-		err = paget.UpdateUserLatestMatchedPaper(db, slackId, latestMatchedPaper)
+		err = paget.UpdateUserLatestMatchedPaper(db, slackId, papers[0].ID)
 		if err != nil {
 
 			message := papers[0].ID + "\n"

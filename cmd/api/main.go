@@ -217,36 +217,13 @@ func searchPapers(w http.ResponseWriter, r *http.Request) {
 	papers := paget.SearchArxivPapers(db, userId)
 	message := ""
 
-	latestMatchedPaper, err := paget.FindLatestMatchedPaper(db, s.UserID)
-
-	if papers[0].ID != latestMatchedPaper {
-		fmt.Println("not match next update")
-		err = paget.UpdateUserLatestMatchedPaper(db, s.UserID, papers[0].ID)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
+	for index, paper := range papers {
+		if index >= 5 {
+			break
 		}
-		params := &slack.Msg{Text: "ヒットした論文： " + message}
-		b, err := json.Marshal(params)
-		if err != nil {
-			fmt.Println("error")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(b)
-
+		message += paper.ID + "\n"
 	}
 
-	/*
-
-		for index, paper := range papers {
-			if index >= 5 {
-				break
-			}
-			message += paper.ID + "\n"
-		}
-	*/
 }
 
 func main() {
