@@ -221,7 +221,7 @@ func searchPapers(w http.ResponseWriter, r *http.Request) {
 
 	if papers[0].ID != latestMatchedPaper {
 		fmt.Println("not match next update")
-		err = paget.UpdateUserLatestMatchedPaper(db, s.UserID, latestMatchedPaper)
+		err = paget.UpdateUserLatestMatchedPaper(db, s.UserID, papers[0].ID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
