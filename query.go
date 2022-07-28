@@ -86,9 +86,9 @@ func FindOrCreateKeywordId(db *sql.DB, keyword_content string) (keywordId int64,
 
 }
 
-func UpdateUserLatestMatchedPaper(db *sql.DB, user_id int64, latestMatchedPaper string) (err error) {
+func UpdateUserLatestMatchedPaper(db *sql.DB, slack_user_id string, latestMatchedPaper string) (err error) {
 
-	if _, err = db.Exec("UPDATE slack_user SET latest_matched_paper = $1 WHERE slack_id = $2", latestMatchedPaper, user_id); err != nil {
+	if _, err = db.Exec("UPDATE slack_user SET latest_matched_paper = $1 WHERE slack_id = $2", latestMatchedPaper, slack_user_id); err != nil {
 		if err != sql.ErrNoRows {
 			fmt.Printf("error when select slack_user:%q\n", err)
 		}
