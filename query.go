@@ -40,6 +40,17 @@ func FindUserId(db *sql.DB, slack_user_id string) (userId int64, err error) {
 	return
 }
 
+func FindLatestMatchedPaper(db *sql.DB, slack_user_id string) (latestMatchedPaper string, err error) {
+
+	if err = db.QueryRow("SELECT latest_matched_paper FROM slack_user WHERE slack_id = $1", slack_user_id).Scan(&latestMatchedPaper); err != nil {
+		if err != sql.ErrNoRows {
+			fmt.Printf("error when select latest_matched_paper:%q\n", err)
+		}
+		fmt.Printf("slack_user canot found")
+	}
+	return
+}
+
 func FindOrCreateUserId(db *sql.DB, slack_user_id string, channel_id string) (userId int64, err error) {
 	if userId, err = FindUserId(db, slack_user_id); err != nil {
 		if err == sql.ErrNoRows {
@@ -73,6 +84,17 @@ func FindOrCreateKeywordId(db *sql.DB, keyword_content string) (keywordId int64,
 	}
 	return
 
+}
+
+func UpdateUserLatestMatchedPaper(db *sql.DB, user_id int64, latestMatchedPaper string) (err error) {
+
+	if _, err = db.Exec("UPDATE slack_user SET latest_matched_paper = $1 WHERE slack_id = $2", latestMatchedPaper, user_id); err != nil {
+		if err != sql.ErrNoRows {
+			fmt.Printf("error when select slack_user:%q\n", err)
+		}
+		fmt.Printf("latestMatchedPaper cannnot create")
+	}
+	return
 }
 
 func IndexKeywordContent(db *sql.DB, user_id int64) (rows *sql.Rows, err error) {
