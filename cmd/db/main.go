@@ -103,25 +103,27 @@ func main() {
 			return
 		}
 	*/
+	/*
 
-	const sql7 = `
-	ALTER TABLE USER_KEYWORD ADD COLUMN user_slack_id VARCHAR(20);
-	`
-	if _, err := db.Exec(sql7); err != nil {
-		fmt.Printf("user keyword create 失敗: %q", err)
-		return
-	}
+		const sql7 = `
+		ALTER TABLE USER_KEYWORD ADD COLUMN user_slack_id VARCHAR(20);
+		`
+		if _, err := db.Exec(sql7); err != nil {
+			fmt.Printf("user keyword create 失敗: %q", err)
+			return
+		}
 
-	const sql8 = `
-	UPDATE USER_KEYWORD SET user_slack_id = (
-		SELECT slack_id FROM SLACK_USER
-		WHERE USER_KEYWORD.slack_user_id = SLACK_USER.id
-	)
-	`
-	if _, err := db.Exec(sql8); err != nil {
-		fmt.Printf("user keyword create 失敗: %q", err)
-		return
-	}
+		const sql8 = `
+		UPDATE USER_KEYWORD SET user_slack_id = (
+			SELECT slack_id FROM SLACK_USER
+			WHERE USER_KEYWORD.slack_user_id = SLACK_USER.id
+		)
+		`
+		if _, err := db.Exec(sql8); err != nil {
+			fmt.Printf("user keyword create 失敗: %q", err)
+			return
+		}
+	*/
 
 	const sql9 = `
 	ALTER TABLE USER_KEYWORD ADD FOREIGN KEY (user_slack_id) 

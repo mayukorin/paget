@@ -11,25 +11,6 @@ import (
 	"github.com/slack-go/slack"
 )
 
-type Paper struct {
-	ID             string
-	submittedMonth string
-}
-
-type Papers []Paper
-
-func (p Papers) Len() int {
-	return len(p)
-}
-
-func (p Papers) Swap(i, j int) {
-	p[i], p[j] = p[j], p[i]
-}
-
-func (p Papers) Less(i, j int) bool {
-	return p[i].submittedMonth > p[j].submittedMonth // 逆
-}
-
 var wg sync.WaitGroup // 行儀良くない？
 
 func deliveryPaper(slackId string) {
