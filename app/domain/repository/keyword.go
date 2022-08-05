@@ -43,3 +43,27 @@ func FindKeyword(db *sql.DB, id int64) (*model.Keyword, error) {
 	}
 	return keyword, nil
 }
+
+func AllKeyword(db *sql.DB, userSlackId string) ([]model.Keyword, error) {
+	stmt, err := db.Prepare("SELECT content FROM keyword JOIN user_keyword on (keyword.id = user_keyword.keyword_id) WHERE user_keyword.user_slack_id = $1")
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to prepare statment")
+	}
+	defer func() {
+		if closeErr := stmt.Close(); closeErr != nil {
+			err = closeErr
+		}
+	}()
+
+	keywords := []model.Keyword{}
+	rows, err := stmt.Query(userSlackId)
+	for rows.Next() {
+		keyword := model.Keyword{}
+		err := rows.Scan(keyword.Content)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to scan")
+		}
+		keywords = append(keywords, keyword)
+	}
+	return keywords, nil
+}

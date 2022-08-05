@@ -35,3 +35,7 @@ func (k *KeywordUseCase) Create(content string) (int64, error) {
 	createdId = id
 	return createdId, nil
 }
+
+func (k *KeywordUseCase) Index(userSlackId string) ([]model.Keyword, error) {
+	return repository.AllKeyword(k.db, userSlackId)
+}
