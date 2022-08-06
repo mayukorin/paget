@@ -10,6 +10,7 @@ require (
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/lib/pq v1.10.5
 	github.com/orijtech/arxiv v0.0.0-20180404200544-d693f8446e6b
+	github.com/pkg/errors v0.9.1
 	github.com/slack-go/slack v0.10.2
 )
 

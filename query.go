@@ -7,27 +7,9 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/mayukorin/paget/app/domain/model"
 	"github.com/orijtech/arxiv/v1"
 )
-
-type Paper struct {
-	ID             string
-	submittedMonth string
-}
-
-type Papers []Paper
-
-func (p Papers) Len() int {
-	return len(p)
-}
-
-func (p Papers) Swap(i, j int) {
-	p[i], p[j] = p[j], p[i]
-}
-
-func (p Papers) Less(i, j int) bool {
-	return p[i].submittedMonth > p[j].submittedMonth // 逆
-}
 
 func FindUserId(db *sql.DB, slack_user_id string) (userId int64, err error) {
 
@@ -141,7 +123,7 @@ func MakeKeywordSlice(db *sql.DB, userId int64) (keywordSlice []*arxiv.Field, er
 	return
 }
 
-func FetchArxivPapersMatchedByKeywords(keywordSlice []*arxiv.Field) (papers Papers, err error) {
+func FetchArxivPapersMatchedByKeywords(keywordSlice []*arxiv.Field) (papers model.Papers, err error) {
 
 	resChan, cancel, err := arxiv.Search(context.Background(), &arxiv.Query{
 		Filters: []*arxiv.Filter{
@@ -159,7 +141,7 @@ func FetchArxivPapersMatchedByKeywords(keywordSlice []*arxiv.Field) (papers Pape
 	if err != nil {
 		fmt.Printf("%s\n", err)
 	}
-	papers = []Paper{} // これだけvar使ってる．
+	papers = []model.Paper{} // これだけvar使ってる．
 
 	for resPage := range resChan {
 		if err := resPage.Err; err != nil {
@@ -170,7 +152,7 @@ func FetchArxivPapersMatchedByKeywords(keywordSlice []*arxiv.Field) (papers Pape
 		for _, entry := range feed.Entry {
 			fmt.Println(entry.ID)
 			startIndex := strings.LastIndex(entry.ID, "/")
-			papers = append(papers, Paper{entry.ID, entry.ID[startIndex+1:startIndex+5] + entry.ID[startIndex+6:startIndex+8]})
+			papers = append(papers, model.Paper{ID: entry.ID, SubmittedMonth: entry.ID[startIndex+1:startIndex+5] + entry.ID[startIndex+6:startIndex+8]})
 		}
 		if resPage.PageNumber >= 2 {
 			cancel()
@@ -181,7 +163,7 @@ func FetchArxivPapersMatchedByKeywords(keywordSlice []*arxiv.Field) (papers Pape
 	return
 }
 
-func SearchArxivPapers(db *sql.DB, userId int64) (papers Papers) {
+func SearchArxivPapers(db *sql.DB, userId int64) (papers model.Papers) {
 	keywordSlice, err := MakeKeywordSlice(db, userId)
 	if err != nil {
 		return
